@@ -1,0 +1,25 @@
+﻿@using AliAndNinoClone.Models
+@model GoogleBookResponse
+
+<h2>API Test Nəticələri:</h2>
+
+<div class="row">
+    @if (Model?.Items != null)
+    {
+        @foreach (var item in Model.Items)
+        {
+            <div class="col-md-4 border p-3">
+                <h4>@item.VolumeInfo.Title</h4>
+                <p>Müəllif: @(item.VolumeInfo.Authors != null ? string.Join(", ", item.VolumeInfo.Authors) : "Naməlum")</p>
+                @if (item.VolumeInfo.ImageLinks != null)
+                {
+                    <img src="@item.VolumeInfo.ImageLinks.Thumbnail" />
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <p>Heç bir məlumat tapılmadı.</p>
+    }
+</div>

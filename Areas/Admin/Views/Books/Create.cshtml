@@ -1,0 +1,92 @@
+﻿@using AliAndNinoClone.ViewModels
+@model BookCreateVM
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Yeni Kitab Əlavə Et (Professional Mode)</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        @* Model səviyyəsində ümumi xətalar *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 col-12 mb-3">
+                                <label asp-for="Title" class="form-label font-weight-bold">Kitabın Adı</label>
+                                <input asp-for="Title" class="form-control" placeholder="Məs: Yaralasar" />
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 col-12 mb-3">
+                                <label asp-for="Author" class="form-label font-weight-bold">Müəllif</label>
+                                <input asp-for="Author" class="form-control" placeholder="Məs: Maral" />
+                                <span asp-validation-for="Author" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 col-12 mb-3">
+                                <label asp-for="Price" class="form-label font-weight-bold">Qiymət (AZN)</label>
+                                <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <label asp-for="StockCount" class="form-label font-weight-bold">Stok Sayı</label>
+                                <input asp-for="StockCount" class="form-control" />
+                                <span asp-validation-for="StockCount" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <label asp-for="CategoryId" class="form-label font-weight-bold">Kateqoriya</label>
+                                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                                    <option value="">-- Kateqoriya Seç --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label font-weight-bold">Kitab Şəkli</label>
+                            <div class="custom-file">
+                                @* Photo sahəsi birbaşa VM-dən gəlir *@
+                                <input asp-for="Photo" type="file" class="custom-file-input" id="customFile" accept="image/*">
+                                <label class="custom-file-label" for="customFile">Şəkil seçin...</label>
+                            </div>
+                            <span asp-validation-for="Photo" class="text-danger small"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary btn-icon-split">
+                                <span class="text">Geri qayıt</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-icon-split">
+                                <span class="text">Yadda Saxla</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @* Şəkil seçiləndə adının "custom-file-label"-də görünməsi üçün balaca JQuery kodu *@
+    <script>
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+
+    @* Client-side validation: Səhifə yenilənmədən xətaları göstərir *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AliAndNinoClone</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        #chat-box {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px !important;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 9999;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        #chat-content {
+            flex-grow: 1;
+            overflow-y: auto !important;
+            padding: 15px;
+            background: #fdfdfd;
+            font-size: 14px;
+            height: 330px;
+        }
+
+        .msg {
+            margin-bottom: 12px;
+            word-wrap: break-word;
+        }
+
+        .ai-msg {
+            color: #e30613;
+            background: #fff1f1;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .chat-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #chat-circle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #e30613;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">AliAndNinoClone</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div id="chat-circle"><i class="fas fa-robot fa-2x"></i></div>
+    <div id="chat-box" style="display:none; flex-direction:column;">
+        <div style="background:#e30613; color:white; padding:15px; font-weight:bold;">Ali və Nino Köməkçisi</div>
+        <div id="chat-content">
+            <div class="msg ai-msg"><b>AI:</b> Salam! Sizə necə kömək edə bilərəm ? </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Yeni mesaj...">
+            <button id="chat-send" style="background:#e30613; color:white; border:none; padding:8px 15px; margin-left:5px; border-radius:5px;">></button>
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">&copy; 2026 - AliAndNinoClone</div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            function updateScroll(){
+                var element = document.getElementById("chat-content");
+                element.scrollTop = element.scrollHeight;
+            }
+
+            $("#chat-circle").click(function() {
+                $("#chat-box").toggle();
+                updateScroll();
+            });
+
+            function sendMessage() {
+                var msg = $("#chat-input").val();
+                if(!msg.trim()) return;
+
+                $("#chat-content").append("<div class='msg'><b>Siz:</b> " + msg + "</div>");
+                $("#chat-input").val("");
+                updateScroll();
+
+                $.post("/Chat/Ask", { message: msg }, function(data) {
+                    $("#chat-content").append("<div class='msg ai-msg'><b>AI:</b> " + data.answer + "</div>");
+                    updateScroll();
+                });
+            }
+
+            $("#chat-send").click(sendMessage);
+            $("#chat-input").keypress(function(e) { if(e.which == 13) sendMessage(); });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
