@@ -1,0 +1,39 @@
+﻿@model AliAndNinoClone.Models.ViewModels.RegisterVM
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 border p-4 shadow-sm rounded bg-white">
+            <h2 class="text-center text-danger mb-4">Qeydiyyat</h2>
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ad və Soyad</label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">İstifadəçi adı</label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Şifrə</label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Şifrəni Təkrarla</label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+                <button type="submit" class="btn btn-danger w-100 mt-2">Qeydiyyatı Tamamla</button>
+            </form>
+        </div>
+    </div>
+</div>

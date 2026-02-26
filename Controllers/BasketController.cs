@@ -1,48 +1,67 @@
 ﻿using AliAndNinoClone.DAL;
 using AliAndNinoClone.Models.Basket;
+using AliAndNinoClone.Models.Common; // AppUser üçün lazımdır
+using Microsoft.AspNetCore.Identity; // UserManager üçün
+using Microsoft.AspNetCore.Authorization; // [Authorize] üçün
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AliAndNinoClone.Controllers
 {
+    [Authorize] // Səbətlə bağlı hər şey üçün giriş mütləqdir
     public class BasketController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public BasketController(AppDbContext context)
+        public BasketController(AppDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // Səbətə məhsul əlavə etmək üçün Action
-        public async Task<IActionResult> AddToBasket(int id)
-        {
-            // 1. Kitabın bazada olub-olmadığını yoxla
-            var book = await _context.Books.FindAsync(id);
-            if (book == null) return NotFound();
+        // Giriş etmiş istifadəçinin ID-sini tapmaq üçün köməkçi metod
+        private string CurrentUserId => _userManager.GetUserId(User);
 
-            // 2. İstifadəçinin səbətini tap (Hələlik login sistemi yoxdursa, test üçün UserId = "1" götürürük)
+        public async Task<IActionResult> Index()
+        {
             var basket = await _context.Baskets
                 .Include(b => b.BasketItems)
-                .FirstOrDefaultAsync(b => b.UserId == "1");
+                .ThenInclude(bi => bi.Book)
+                .FirstOrDefaultAsync(b => b.UserId == CurrentUserId); // "1" yerinə CurrentUserId
 
             if (basket == null)
             {
-                basket = new Basket { UserId = "1" };
-                _context.Baskets.Add(basket);
+                return View(new Basket { BasketItems = new List<BasketItem>() });
             }
 
-            // 3. Bu kitab artıq səbətdə varmı?
+            return View(basket);
+        }
+
+        public async Task<IActionResult> AddToBasket(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null) return NotFound();
+
+            var basket = await _context.Baskets
+                .Include(b => b.BasketItems)
+                .FirstOrDefaultAsync(b => b.UserId == CurrentUserId);
+
+            if (basket == null)
+            {
+                basket = new Basket { UserId = CurrentUserId }; // Dinamik ID
+                _context.Baskets.Add(basket);
+                await _context.SaveChangesAsync();
+            }
+
             var existingItem = basket.BasketItems.FirstOrDefault(bi => bi.BookId == id);
 
             if (existingItem != null)
             {
-                // Varsa sayını artır
                 existingItem.Count++;
             }
             else
             {
-                // Yoxdursa yeni sətir əlavə et
                 basket.BasketItems.Add(new BasketItem
                 {
                     BookId = id,
@@ -51,9 +70,69 @@ namespace AliAndNinoClone.Controllers
             }
 
             await _context.SaveChangesAsync();
-
-            // Səbətə əlavə etdikdən sonra gəldiyi səhifəyə qaytar
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> RemoveFromBasket(int id)
+        {
+            var basket = await _context.Baskets
+                .Include(b => b.BasketItems)
+                .FirstOrDefaultAsync(b => b.UserId == CurrentUserId);
+
+            if (basket == null) return RedirectToAction("Index");
+
+            var itemToRemove = basket.BasketItems.FirstOrDefault(bi => bi.BookId == id);
+
+            if (itemToRemove != null)
+            {
+                _context.BasketItems.Remove(itemToRemove);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> IncreaseQuantity(int id)
+        {
+            var basket = await _context.Baskets
+                .Include(b => b.BasketItems)
+                .FirstOrDefaultAsync(b => b.UserId == CurrentUserId);
+
+            if (basket == null) return NotFound();
+
+            var item = basket.BasketItems.FirstOrDefault(i => i.BookId == id);
+            if (item != null)
+            {
+                item.Count++;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> DecreaseQuantity(int id)
+        {
+            var basket = await _context.Baskets
+                .Include(b => b.BasketItems)
+                .FirstOrDefaultAsync(b => b.UserId == CurrentUserId);
+
+            if (basket == null) return NotFound();
+
+            var item = basket.BasketItems.FirstOrDefault(i => i.BookId == id);
+            if (item != null)
+            {
+                if (item.Count > 1)
+                {
+                    item.Count--;
+                }
+                else
+                {
+                    _context.BasketItems.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

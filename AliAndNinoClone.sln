@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11513.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliAndNinoClone", "AliAndNinoClone\AliAndNinoClone.csproj", "{8487F928-0AFA-49FB-B7CD-A6B2E213250C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliAndNinoClone", "AliAndNinoClone.csproj", "{77B80D99-0CD3-C45D-F241-61797C3B0125}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8487F928-0AFA-49FB-B7CD-A6B2E213250C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8487F928-0AFA-49FB-B7CD-A6B2E213250C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8487F928-0AFA-49FB-B7CD-A6B2E213250C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8487F928-0AFA-49FB-B7CD-A6B2E213250C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77B80D99-0CD3-C45D-F241-61797C3B0125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77B80D99-0CD3-C45D-F241-61797C3B0125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77B80D99-0CD3-C45D-F241-61797C3B0125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77B80D99-0CD3-C45D-F241-61797C3B0125}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EFE301FC-B1B5-485D-9C46-987D5924B3D2}
+		SolutionGuid = {02219C9B-4B18-4657-A150-0F6448AFBE9B}
 	EndGlobalSection
 EndGlobal

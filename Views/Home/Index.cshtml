@@ -1,25 +1,56 @@
-﻿@using AliAndNinoClone.Models
-@model GoogleBookResponse
+﻿@model List<AliAndNinoClone.Models.Book>
 
-<h2>API Test Nəticələri:</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 text-danger">Kitab Mağazası</h2>
 
-<div class="row">
-    @if (Model?.Items != null)
-    {
-        @foreach (var item in Model.Items)
+    <div class="row">
+        @if (Model != null && Model.Any())
         {
-            <div class="col-md-4 border p-3">
-                <h4>@item.VolumeInfo.Title</h4>
-                <p>Müəllif: @(item.VolumeInfo.Authors != null ? string.Join(", ", item.VolumeInfo.Authors) : "Naməlum")</p>
-                @if (item.VolumeInfo.ImageLinks != null)
-                {
-                    <img src="@item.VolumeInfo.ImageLinks.Thumbnail" />
-                }
+            @foreach (var book in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <img src="@book.ImageUrl" class="card-img-top p-2" alt="@book.Title" style="height: 250px; object-fit: contain;">
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-truncate" title="@book.Title">@book.Title</h5>
+                            <p class="card-text text-muted small">@book.Author</p>
+                            <p class="fw-bold text-danger fs-5">@book.Price AZN</p>
+
+                            <div class="mt-auto">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @* Giriş edibsə normal səbətə atma funksiyası *@
+                                    <a asp-controller="Basket"
+                                       asp-action="AddToBasket"
+                                       asp-route-id="@book.Id"
+                                       class="btn btn-danger w-100 shadow-sm">
+                                        <i class="fa-solid fa-cart-plus"></i> Səbətə at
+                                    </a>
+                                }
+                                else
+                                {
+                                    @* Giriş etməyibsə Login səhifəsinə yönləndirən düymə *@
+                                    <a asp-controller="Account"
+                                       asp-action="Login"
+                                       class="btn btn-outline-secondary w-100">
+                                        <i class="fa-solid fa-right-to-bracket"></i> Giriş et və Al
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-light border shadow-sm">
+                    <i class="fa-solid fa-book-open fa-3x text-muted mb-3"></i>
+                    <p class="h5 text-muted">Bazada heç bir kitab tapılmadı.</p>
+                </div>
             </div>
         }
-    }
-    else
-    {
-        <p>Heç bir məlumat tapılmadı.</p>
-    }
+    </div>
 </div>

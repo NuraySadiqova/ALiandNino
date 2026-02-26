@@ -1,0 +1,59 @@
+﻿@using AliAndNinoClone.Models.Order
+@model List<Order>
+
+<div class="container mt-5">
+    <h2 class="mb-4"><i class="fa-solid fa-box-open text-danger me-2"></i>Sifarişlərim</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info shadow-sm">
+            Hələ ki, heç bir sifarişiniz yoxdur. <a asp-controller="Home" asp-action="Index" class="alert-link">Kitablara baxmaq üçün klikləyin.</a>
+        </div>
+    }
+    else
+    {
+        <div class="accordion shadow-sm" id="orderAccordion">
+            @foreach (var order in Model)
+            {
+                <div class="accordion-item mb-3 border">
+                    <h2 class="accordion-header" id="heading-@order.Id">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@order.Id">
+                            <div class="d-flex justify-content-between w-100 me-3">
+                                <span><strong>Sifariş #@order.Id</strong> - @order.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                <span class="text-danger fw-bold">@order.TotalPrice AZN</span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse-@order.Id" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
+                        <div class="accordion-body bg-light">
+                            <h6>Çatdırılma Ünvanı: <small class="text-muted">@order.Address</small></h6>
+                            <h6>Əlaqə: <small class="text-muted">@order.PhoneNumber</small></h6>
+                            <hr />
+                            <table class="table table-sm bg-white rounded shadow-sm">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Məhsul</th>
+                                        <th>Sayı</th>
+                                        <th>Qiymət</th>
+                                        <th>Cəmi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>@item.Book.Title</td>
+                                            <td>@item.Count</td>
+                                            <td>@item.Price AZN</td>
+                                            <td>@(item.Count* item.Price) AZN</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

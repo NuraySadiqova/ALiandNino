@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Sifariş Tamamlandı";
+}
+
+<div class="container mt-5 text-center">
+    <div class="py-5 shadow-sm rounded bg-white border">
+        <div class="mb-4">
+            <i class="fa-solid fa-circle-check fa-6x text-success"></i>
+        </div>
+
+        <h1 class="display-4 fw-bold text-dark">Təşəkkür Edirik!</h1>
+        <p class="lead text-muted">Sifarişiniz uğurla qəbul edildi. Tezliklə sizinlə əlaqə saxlanılacaq.</p>
+
+        <hr class="my-4 mx-auto" style="width: 60%;">
+
+        <div class="mb-4">
+            <p class="fs-5 text-secondary">
+                Sifariş nömrəniz:
+                <span class="text-danger fw-bold">#ORD-@(ViewBag.OrderId ?? "N/A")</span>
+            </p>
+        </div>
+
+        <div class="mt-5 d-flex justify-content-center gap-3">
+            <a asp-controller="Order" asp-action="MyOrders" class="btn btn-outline-dark btn-lg px-4 shadow-sm">
+                <i class="fa-solid fa-list-check me-2"></i>Sifarişlərim
+            </a>
+            <a href="/" class="btn btn-danger btn-lg px-5 shadow">
+                <i class="fa-solid fa-house me-2"></i>Ana Səhifəyə Qayıt
+            </a>
+        </div>
+
+        <div class="mt-4">
+            <small class="text-muted">Hər hansı bir sualınız yaranarsa, müştəri xidmətləri ilə əlaqə saxlaya bilərsiniz.</small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+}

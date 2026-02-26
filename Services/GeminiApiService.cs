@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration; // Mütləq əlavə et
+using Microsoft.Extensions.Configuration;
 
 namespace AliAndNinoClone.Services
 {
@@ -9,10 +9,27 @@ namespace AliAndNinoClone.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
 
+        // Söhbət tarixçəsini yadda saxlamaq üçün statik siyahı
+        // QEYD: Bu sadə versiyadır, bütün istifadəçilər eyni tarixçəni görəcək. 
+        // Real layihədə bunu Session və ya Verilənlər Bazası ilə fərdiləşdirmək lazımdır.
+        private static readonly List<object> _chatHistory = new List<object>
+        {
+            new {
+                role = "system",
+                content = "Sən Azərbaycanın 'Ali and Nino' kitab mağazası üçün peşəkar köməkçisən. " +
+                          "QAYDALAR: " +
+                          "1. Yalnız Azərbaycan dilində cavab ver. " +
+                          "2. Hər mesajda yenidən 'Salam' yazma! Əgər söhbət artıq başlayıbsa, birbaşa suala keç. " +
+                          "3. 'Salom' qətiyyən yazma, yalnız 'Salam' istifadə et. " +
+                          "4. 'Kitab mağazasında kömək edə bilərəm' kimi cümlələri hər mesajda təkrar etmə. " +
+                          "5. Ə, ö, ğ, ü, ç, ş hərflərindən düzgün istifadə et. " +
+                          "6. Qısa, səmimi və köməkçi ol."
+            }
+        };
+
         public GeminiApiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            // appsettings.json-dan açarı oxuyuruq
             _apiKey = configuration["GroqSettings:ApiKey"] ?? "";
         }
 
@@ -22,24 +39,13 @@ namespace AliAndNinoClone.Services
             {
                 string url = "https://api.groq.com/openai/v1/chat/completions";
 
+                // 1. İstifadəçinin yeni mesajını tarixçəyə əlavə edirik
+                _chatHistory.Add(new { role = "user", content = userMessage });
+
                 var requestBody = new
                 {
                     model = "llama-3.3-70b-versatile",
-                    messages = new[]
-     {
-        new {
-            role = "system",
-            content = "Sən Azərbaycanın ən böyük kitab mağazası 'Ali and Nino' üçün peşəkar köməkçisən. " +
-                      "QAYDALAR: " +
-                      "1. Yalnız və yalnız Azərbaycan dilində cavab ver. " +
-                      "2. 'Salom' yox, mütləq 'Salam' yaz. " +
-                      "3. Özünü 'köməkçi ola bilərəm?' kimi deyil, 'kömək edə bilərəm?' kimi ifadə et. " +
-                      "4. Cümlələrində Azərbaycan dilinin qrammatikasına (ə, ö, ğ, ü, ç, ş hərflərinə) ciddi riayət et. " +
-                      "5. Başqa dillərdən (türk, özbək, tacik) sözlər qatma."+
-                      "6. KItab mağazasında kömək edə bilərəm demə. "
-        },
-        new { role = "user", content = userMessage }
-    }
+                    messages = _chatHistory.ToArray() // Tarixçəni bütöv göndəririk
                 };
 
                 var jsonRequest = JsonSerializer.Serialize(requestBody);
@@ -52,7 +58,18 @@ namespace AliAndNinoClone.Services
                 var jsonResponse = await response.Content.ReadAsStringAsync();
 
                 using var doc = JsonDocument.Parse(jsonResponse);
-                return doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? "Cavab tapılmadı.";
+                var aiContent = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? "Bağışlayın, cavab verə bilmirəm.";
+
+                // 2. AI-ın cavabını da tarixçəyə əlavə edirik ki, növbəti mesajda xatırlasın
+                _chatHistory.Add(new { role = "assistant", content = aiContent });
+
+                // Tarixçənin çox böyüyüb limiti keçməməsi üçün son 10-15 mesajı saxlamaq olar
+                if (_chatHistory.Count > 20)
+                {
+                    _chatHistory.RemoveAt(1); // Sistem mesajını yox, ondan sonrakı köhnə mesajı silirik
+                }
+
+                return aiContent;
             }
             catch (Exception ex)
             {
