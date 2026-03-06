@@ -1,7 +1,5 @@
 ﻿@model AliAndNinoClone.Models.Basket.Basket
 
-<div class="container mt-5">
-    <h2 class="text-danger mb-4"><i class="fa-solid fa-cart-shopping"></i> Səbətim</h2>
 
     @if (Model.BasketItems != null && Model.BasketItems.Any())
     {
@@ -22,7 +20,7 @@
                     {
                         <tr>
                             <td>
-                                <img src="@item.Book.ImageUrl" alt="@item.Book.Title" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;" />
+                                <img src="~/Assets/Images/@item." alt="@item.Book.Title" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;" />
                             </td>
                             <td class="fw-bold">@item.Book.Title</td>
                             <td>@item.Book.Price AZN</td>

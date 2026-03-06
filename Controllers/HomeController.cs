@@ -21,7 +21,7 @@ namespace AliAndNinoClone.Controllers
         {
             // İndi _context artıq tanınır və bazadan kitabları çəkə bilər
             var books = await _context.Books.ToListAsync();
-
+            
             // Səhifəyə bazadakı kitabların siyahısını göndəririk
             return View(books);
         }
